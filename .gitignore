@@ -1,0 +1,13 @@
+# Executables
+*.pyc
+
+# Data
+*.txt
+*.csv
+*.h5
+
+# Folders
+/__pycache__/*
+
+# Config
+*.json
