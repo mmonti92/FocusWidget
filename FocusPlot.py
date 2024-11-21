@@ -101,6 +101,10 @@ class DragAndDropPlotter(QMainWindow):
 
     def toggle_bg_subtraction(self):
         self.subtract_bg = not self.subtract_bg
+        try:
+            self.plot_file(self.last_file)
+        except AttributeError:
+            pass
 
     def open_file_dialog(self):
         initial_folder = self.default_folder
@@ -127,6 +131,7 @@ class DragAndDropPlotter(QMainWindow):
             file_path = urls[
                 0
             ].toLocalFile()  # Get the file path of the dropped file
+            self.last_file = file_path
             self.plot_file(file_path)
 
     def plot_file(self, file_path):
@@ -138,8 +143,12 @@ class DragAndDropPlotter(QMainWindow):
             img = data[2]
 
             if self.subtract_bg:
-                _, _, bg = ut.ReadImg(self.bg_path)
-                img -= bg
+                try:
+                    _, _, bg = ut.ReadImg(self.bg_path)
+                    img -= bg
+                except AttributeError:
+                    self.label.setText(f"No background imported")
+                    pass
 
             self.plot_data.clear_plot()
             self.plot_fit.clear_plot()
