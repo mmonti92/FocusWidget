@@ -2,6 +2,7 @@
 import sys
 import numpy as np
 import json
+import warnings as wn
 
 from PyQt6.QtWidgets import (
     QApplication,
@@ -97,6 +98,11 @@ class DragAndDropPlotter(QMainWindow):
                 config = json.load(f)
                 return config.get("default_folder", "")
         except FileNotFoundError:
+            wn.warn(
+                "Default background folder not found,"
+                + " file dialog will open on widget directory.",
+                category=UserWarning,
+            )
             return ""
 
     def toggle_bg_subtraction(self):
@@ -104,7 +110,11 @@ class DragAndDropPlotter(QMainWindow):
         try:
             self.plot_file(self.last_file)
         except AttributeError:
-            pass
+            wn.warn(
+                "Attempting to subtract a background without having loaded"
+                + " a file.",
+                category=UserWarning,
+            )
 
     def open_file_dialog(self):
         initial_folder = self.default_folder
@@ -147,7 +157,11 @@ class DragAndDropPlotter(QMainWindow):
                     _, _, bg = ut.ReadImg(self.bg_path)
                     img -= bg
                 except AttributeError:
-                    self.label.setText(f"No background imported")
+                    wn.warn(
+                        "Attempting to subtract a background without having"
+                        + " loaded one. Background subtraction ignored.",
+                        category=UserWarning,
+                    )
                     pass
 
             self.plot_data.clear_plot()
@@ -155,6 +169,9 @@ class DragAndDropPlotter(QMainWindow):
             self.plot_res.clear_plot()
             self.plot_x.clear_plot()
             self.plot_y.clear_plot()
+
+            self.plot_data.canvas.ax.set_xlabel("x[mm]")
+            self.plot_data.canvas.ax.set_ylabel("y[mm]")
 
             self.plot_data.plot_img(
                 x,
@@ -164,9 +181,6 @@ class DragAndDropPlotter(QMainWindow):
                 vmax=10000,
                 # label=f"{file_path.split('/')[-1]}",
             )
-            self.plot_data.canvas.ax.set_title("Data")
-            self.plot_data.canvas.ax.set_xlabel("x[mm]")
-            self.plot_data.canvas.ax.set_ylabel("y[mm]")
 
             # Fitting
             out, _, fitted = ut.FitSpot(img, x, y)
@@ -177,6 +191,9 @@ class DragAndDropPlotter(QMainWindow):
                 np.rint(out.params["sy"].stderr * 2),
             )
 
+            self.plot_fit.canvas.ax.set_xlabel("x[mm]")
+            self.plot_fit.canvas.ax.set_ylabel("y[mm]")
+
             self.plot_fit.plot_img(
                 x,
                 y,
@@ -184,11 +201,12 @@ class DragAndDropPlotter(QMainWindow):
                 vmin=0,
                 vmax=10000,
             )
-            self.plot_fit.canvas.ax.set_title("Fit")
-            self.plot_fit.canvas.ax.set_xlabel("x[mm]")
-            self.plot_fit.canvas.ax.set_ylabel("y[mm]")
 
             # Residuals
+
+            self.plot_res.canvas.ax.set_xlabel("x[mm]")
+            self.plot_res.canvas.ax.set_ylabel("y[mm]")
+
             self.plot_res.plot_img(
                 x,
                 y,
@@ -197,11 +215,11 @@ class DragAndDropPlotter(QMainWindow):
                 vmax=1000,
                 cmap="coolwarm",
             )
-            self.plot_fit.canvas.ax.set_title("Residuals")
-            self.plot_fit.canvas.ax.set_xlabel("x[mm]")
-            self.plot_fit.canvas.ax.set_ylabel("y[mm]")
 
             # Sum x
+
+            self.plot_x.canvas.ax.set_xlabel("x[mm]")
+            self.plot_x.canvas.ax.set_ylabel("Sum along y")
             self.plot_x.plot_data(
                 x,
                 img.sum(0),
@@ -214,6 +232,8 @@ class DragAndDropPlotter(QMainWindow):
             )
 
             # Sum y
+            self.plot_y.canvas.ax.set_xlabel("y[mm]")
+            self.plot_y.canvas.ax.set_ylabel("Sum along x")
             self.plot_y.plot_data(
                 y,
                 img.sum(1),
