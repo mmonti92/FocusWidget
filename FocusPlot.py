@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QPushButton,
 )
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QDragEnterEvent, QDropEvent
 from PyQt6.QtCore import Qt
 
 import PlotWidgets as pw
@@ -92,7 +92,7 @@ class DragAndDropPlotter(QMainWindow):
         # Enable drag-and-drop
         self.setAcceptDrops(True)
 
-    def load_folder(self):
+    def load_folder(self) -> str:
         try:
             with open("Paths.json") as f:
                 config = json.load(f)
@@ -105,7 +105,7 @@ class DragAndDropPlotter(QMainWindow):
             )
             return ""
 
-    def toggle_bg_subtraction(self):
+    def toggle_bg_subtraction(self) -> None:
         self.subtract_bg = not self.subtract_bg
         try:
             self.plot_file(self.last_file)
@@ -116,7 +116,7 @@ class DragAndDropPlotter(QMainWindow):
                 category=UserWarning,
             )
 
-    def open_file_dialog(self):
+    def open_file_dialog(self) -> None:
         initial_folder = self.default_folder
         file_path, _ = QFileDialog.getOpenFileName(
             self, "Select a File", initial_folder, "All Files (*.*)"
@@ -128,14 +128,14 @@ class DragAndDropPlotter(QMainWindow):
             self.bg_label.setText("No file selected")
 
     # Override dragEnterEvent to accept files
-    def dragEnterEvent(self, event):
+    def dragEnterEvent(self, event: QDragEnterEvent) -> None:
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
         else:
             event.ignore()
 
     # Override dropEvent to handle dropped files
-    def dropEvent(self, event):
+    def dropEvent(self, event: QDropEvent) -> None:
         urls = event.mimeData().urls()
         if urls:
             file_path = urls[
@@ -144,7 +144,7 @@ class DragAndDropPlotter(QMainWindow):
             self.last_file = file_path
             self.plot_file(file_path)
 
-    def plot_file(self, file_path):
+    def plot_file(self, file_path: str) -> None:
         try:
             data = ut.ReadImg(file_path)
 

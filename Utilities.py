@@ -6,7 +6,7 @@ import DataAnalysis.ReadWriteFunctions as rw
 import DataAnalysis.FittingFunctions as ff
 
 
-def ReadImg(file):
+def ReadImg(file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     img = rw.Reader(file, delimiter=",")
     # print(np.shape(img))
     x = np.linspace(0, np.shape(img)[1] * 25, np.shape(img)[1]) - 1500
@@ -15,7 +15,9 @@ def ReadImg(file):
     return x, y, img
 
 
-def FitSpot(img, x, y):
+def FitSpot(
+    img: np.ndarray, x: np.ndarray, y: np.ndarray
+) -> tuple[fit.minimizer.MinimizerResult, np.ndarray, np.ndarray]:
     X, Y = np.meshgrid(x, y)
     par = fit.Parameters()
     par.add("A", np.amax(img) / 2, min=0)

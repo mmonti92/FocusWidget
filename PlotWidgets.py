@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import numpy as np
+import typing as tp
 from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
@@ -16,7 +18,7 @@ class MplCanvas(FigureCanvas):
 
 
 class PlotWidget(QWidget):
-    def __init__(self, title, parent=None):
+    def __init__(self, title: str, parent: QWidget = None) -> None:
         super().__init__(parent)
         self.canvas = MplCanvas(self)
         self.toolbar = NavigationToolbar2QT(self.canvas, self)
@@ -28,11 +30,18 @@ class PlotWidget(QWidget):
 
         self.canvas.ax.set_title(title)
 
-    def clear_plot(self):
+    def clear_plot(self) -> None:
         self.canvas.ax.clear()
         self.canvas.draw()
 
-    def plot_img(self, x, y, z, *args, **kwargs):
+    def plot_img(
+        self,
+        x: np.ndarray,
+        y: np.ndarray,
+        z: np.ndarray,
+        *args: tp.Any,
+        **kwargs: tp.Any
+    ):
         self.canvas.ax.imshow(
             z,
             aspect="equal",
@@ -43,7 +52,9 @@ class PlotWidget(QWidget):
         # self.canvas.ax.legend(loc="upper center")
         self.canvas.draw()
 
-    def plot_data(self, x, y, label, color=None):
+    def plot_data(
+        self, x: np.ndarray, y: np.ndarray, label: str, color: str = None
+    ):
         self.canvas.ax.plot(x, y, label=label, color=color)
         self.canvas.ax.legend(loc="upper left")
         self.canvas.draw()
