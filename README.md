@@ -24,7 +24,7 @@ To run this project, you'll need the following Python libraries:
 - **Matplotlib**: For plotting the data.
 - **NumPy**: For handling arrays and numerical operations.
 - **lmfit**: For nonlinear least squares fitting (2D Gaussian fitting).
-- **DataAnalysis**: Custom package for reading, fitting, and residual calculation (assumed to be present).
+- **DataAnalysis**: Custom package for reading, fitting, and residual calculation (https://github.com/mmonti92/Toolbox).
 
 ### Install Dependencies
 
@@ -38,3 +38,5 @@ pip install PyQt6 matplotlib numpy lmfit
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/
+
+
