@@ -1,4 +1,5 @@
 import numpy as np
+import os
 import lmfit as fit
 
 import DataAnalysis.Models as mod
@@ -6,9 +7,26 @@ import DataAnalysis.ReadWriteFunctions as rw
 import DataAnalysis.FittingFunctions as ff
 
 
+def Readcsv(file: str) -> np.ndarray:
+    return rw.Reader(file, delimiter=",")
+    # return img
+
+
+def Readdat(file: str) -> np.ndarray:
+    img = np.fromfile(file, dtype=np.uint16).reshape(120, 160)
+    return np.transpose(img)
+
+
+def GetReader(file: str):
+    READERS = {".csv": Readcsv, ".dat": Readdat}
+    _, ext = os.path.splitext(file)
+    return READERS[ext.lower()]
+
+
 def ReadImg(file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    img = rw.Reader(file, delimiter=",")
-    # print(np.shape(img))
+    reader = GetReader(file)
+    img = reader(file)
+
     x = np.linspace(0, np.shape(img)[1] * 25, np.shape(img)[1]) - 1500
     y = np.linspace(0, np.shape(img)[0] * 25, np.shape(img)[0]) - 2000
 

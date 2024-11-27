@@ -33,8 +33,8 @@ class DragAndDropPlotter(QMainWindow):
         self.label = QLabel("Drag and drop a file here to plot", self)
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.result_label_x = QLabel("Width in x", self)
-        self.result_label_y = QLabel("Width in y", self)
+        self.result_label_x = QLabel("x radius (1/e^2)", self)
+        self.result_label_y = QLabel("y radius (1/e^2)", self)
         self.result_label_x.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.result_label_y.setAlignment(Qt.AlignmentFlag.AlignCenter)
         custom_font = QFont("Arial", 30)
@@ -246,8 +246,12 @@ class DragAndDropPlotter(QMainWindow):
             )
 
             self.label.setText(f"Plotting data from: {file_path}")
-            self.result_label_x.setText(f"x width=({wx}\u00B1{swx})\u00B5m")
-            self.result_label_y.setText(f"y width=({wy}\u00B1{swy})\u00B5m")
+            self.result_label_x.setText(
+                f"x radius (1/e^2)=({wx}\u00B1{swx})\u00B5m"
+            )
+            self.result_label_y.setText(
+                f"y radius (1/e^2)=({wy}\u00B1{swy})\u00B5m"
+            )
 
         except Exception as e:
             self.label.setText(f"Failed to plot data: {e}")
