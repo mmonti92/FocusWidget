@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import lmfit as fit
+import matplotlib.pyplot as plt
 
 import DataAnalysis.Models as mod
 import DataAnalysis.ReadWriteFunctions as rw
@@ -17,8 +18,18 @@ def Readdat(file: str) -> np.ndarray:
     return np.transpose(img)
 
 
+def Readjpgtif(file: str) -> np.ndarray:
+    img = plt.imread(file).sum(2)
+    return np.transpose(img)
+
+
 def GetReader(file: str):
-    READERS = {".csv": Readcsv, ".dat": Readdat}
+    READERS = {
+        ".csv": Readcsv,
+        ".dat": Readdat,
+        ".jpg": Readjpgtif,
+        ".tif": Readjpgtif,
+    }
     _, ext = os.path.splitext(file)
     return READERS[ext.lower()]
 
