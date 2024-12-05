@@ -2,7 +2,8 @@ import numpy as np
 import os
 import lmfit as fit
 import matplotlib.pyplot as plt
-
+import PIL as pil
+import warnings as wn
 import DataAnalysis.Models as mod
 import DataAnalysis.ReadWriteFunctions as rw
 import DataAnalysis.FittingFunctions as ff
@@ -14,12 +15,20 @@ def Readcsv(file: str) -> np.ndarray:
 
 
 def Readdat(file: str) -> np.ndarray:
-    img = np.fromfile(file, dtype=np.uint16).reshape(120, 160)
+    img = (
+        np.fromfile(file, dtype=np.uint16)
+        .reshape(120, 160)
+        .astype(np.float32)
+    )
     return np.transpose(img)
 
 
 def Readjpgtif(file: str) -> np.ndarray:
-    img = plt.imread(file).sum(2)
+    wn.warn(
+        "Attention! The jpg and tif images are lacking not accurate!",
+        category=UserWarning,
+    )
+    img = np.array(pil.Image.open(file).convert("L")).astype(np.float32)
     return np.transpose(img)
 
 
