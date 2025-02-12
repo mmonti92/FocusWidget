@@ -163,50 +163,50 @@ class DragAndDropPlotter(QMainWindow):
                         category=UserWarning,
                     )
                     pass
+            # Fitting
+            out, _, fitted = ut.FitSpot(img, x, y)
+            wx, wy = (
+                np.rint(out.params["sx"].value * 2),
+                np.rint(out.params["sy"].value * 2),
+            )
+            try:
+                swx, swy = np.rint(out.params["sx"].stderr * 2), np.rint(
+                    out.params["sy"].stderr * 2
+                )
+            except TypeError:
+                swx, swy = 0, 0
 
-            self.plot_data.clear_plot()
-            self.plot_fit.clear_plot()
-            self.plot_res.clear_plot()
-            self.plot_x.clear_plot()
-            self.plot_y.clear_plot()
+            plots = [
+                self.plot_data,
+                self.plot_fit,
+                self.plot_res,
+                self.plot_x,
+                self.plot_y,
+            ]
+            for i, p in enumerate(plots):
+                p.clear_plot()
 
-            self.plot_data.canvas.ax.set_xlabel("x[mm]")
-            self.plot_data.canvas.ax.set_ylabel("y[mm]")
+                p.canvas.ax.set_xlabel("x[mm]")
+                p.canvas.ax.set_ylabel("y[mm]")
 
             self.plot_data.plot_img(
                 x,
                 y,
                 img,
                 vmin=0,
-                vmax=10000,
+                vmax=np.nanmax(img),
                 # label=f"{file_path.split('/')[-1]}",
             )
-
-            # Fitting
-            out, _, fitted = ut.FitSpot(img, x, y)
-            wx, wy, swx, swy = (
-                np.rint(out.params["sx"].value * 2),
-                np.rint(out.params["sy"].value * 2),
-                np.rint(out.params["sx"].stderr * 2),
-                np.rint(out.params["sy"].stderr * 2),
-            )
-
-            self.plot_fit.canvas.ax.set_xlabel("x[mm]")
-            self.plot_fit.canvas.ax.set_ylabel("y[mm]")
 
             self.plot_fit.plot_img(
                 x,
                 y,
                 fitted,
                 vmin=0,
-                vmax=10000,
+                vmax=np.nanmax(img),
             )
 
             # Residuals
-
-            self.plot_res.canvas.ax.set_xlabel("x[mm]")
-            self.plot_res.canvas.ax.set_ylabel("y[mm]")
-
             self.plot_res.plot_img(
                 x,
                 y,
@@ -217,8 +217,6 @@ class DragAndDropPlotter(QMainWindow):
             )
 
             # Sum x
-
-            self.plot_x.canvas.ax.set_xlabel("x[mm]")
             self.plot_x.canvas.ax.set_ylabel("Sum along y")
             self.plot_x.plot_data(
                 x,
